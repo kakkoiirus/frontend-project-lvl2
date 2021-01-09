@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+import commander from 'commander';
+const program = commander.program;
+
+program
+  .version('1.0.0')
+  .description('Compares two configuration files and shows a difference.');
+
+program.parse(process.argv);
