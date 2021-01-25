@@ -5,7 +5,7 @@ import _ from 'lodash';
 const readFile = (filepath) => {
   const fullPath = path.resolve(process.cwd(), filepath);
 
-  const file = fs.readFileSync(fullPath);
+  const file = fs.readFileSync(fullPath, 'utf-8');
 
   return file;
 };
