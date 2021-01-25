@@ -5,4 +5,8 @@
 
 Пример работы
 ---
+JSON:
 [![asciicast](https://asciinema.org/a/ASMSAYFYRqfFJI2LIfci8pFcz.svg)](https://asciinema.org/a/ASMSAYFYRqfFJI2LIfci8pFcz)
+
+YAML:
+[![asciicast](https://asciinema.org/a/Rf8jOWsQ1jwDMmDEo0eqJsd1i.svg)](https://asciinema.org/a/Rf8jOWsQ1jwDMmDEo0eqJsd1i)
