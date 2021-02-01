@@ -2,10 +2,10 @@ import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import parse from './parsers.js';
+import format from './stylish.js';
 
 const readFile = (filepath) => {
   const fullPath = path.resolve(process.cwd(), filepath);
-  console.log(fullPath);
 
   const file = fs.readFileSync(fullPath, 'utf-8');
 
@@ -19,29 +19,36 @@ export default (filepath1, filepath2) => {
   const parsedFile1 = parse(readFile(filepath1), extension1);
   const parsedFile2 = parse(readFile(filepath2), extension2);
 
-  const keysToCompare = Object.keys({ ...parsedFile1, ...parsedFile2 }).sort();
+  const iter = (obj1, obj2) => {
+    const keysToCompare = Object.keys({ ...obj1, ...obj2 }).sort();
 
-  let result = '{\n';
+    return keysToCompare.reduce((acc, key) => {
+      const value1 = obj1[key];
+      const value2 = obj2[key];
 
-  keysToCompare.forEach((key) => {
-    const key1 = parsedFile1[key];
-    const key2 = parsedFile2[key];
+      if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
+        acc.push({ key, value: iter(value1, value2), hasChildren: true });
+        return acc;
+      }
 
-    if (key1 === key2) {
-      result += `    ${key}: ${key1}\n`;
-      return;
-    }
+      if (value1 === value2) {
+        acc.push({ key, status: 'unchanged', value: value1 });
+        return acc;
+      }
 
-    if (_.has(parsedFile1, key)) {
-      result += `  - ${key}: ${key1}\n`;
-    }
+      if (_.has(obj1, key)) {
+        acc.push({ key, status: 'deleted', value: value1 });
+      }
 
-    if (_.has(parsedFile2, key)) {
-      result += `  + ${key}: ${key2}\n`;
-    }
-  });
+      if (_.has(obj2, key)) {
+        acc.push({ key, status: 'added', value: value2 });
+      }
 
-  result += '}';
+      return acc;
+    }, []);
+  };
 
-  return result;
+  const ast = iter(parsedFile1, parsedFile2);
+
+  return format(ast);
 };

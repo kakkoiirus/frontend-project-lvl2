@@ -5,8 +5,11 @@
 
 Пример работы
 ---
-JSON:
+Плоский JSON:
 [![asciicast](https://asciinema.org/a/ASMSAYFYRqfFJI2LIfci8pFcz.svg)](https://asciinema.org/a/ASMSAYFYRqfFJI2LIfci8pFcz)
 
-YAML:
+Плоский YAML:
 [![asciicast](https://asciinema.org/a/Rf8jOWsQ1jwDMmDEo0eqJsd1i.svg)](https://asciinema.org/a/Rf8jOWsQ1jwDMmDEo0eqJsd1i)
+
+Вложенные структурами (JSON и YAML)
+[![asciicast](https://asciinema.org/a/a1YFxc4aFomFFdVNAe5TDQQAV.svg)](https://asciinema.org/a/a1YFxc4aFomFFdVNAe5TDQQAV)
