@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import parse from './parsers.js';
-import format from './stylish.js';
+import format from './formatters/index.js';
 
 const readFile = (filepath) => {
   const fullPath = path.resolve(process.cwd(), filepath);
@@ -12,7 +12,7 @@ const readFile = (filepath) => {
   return file;
 };
 
-export default (filepath1, filepath2) => {
+export default (filepath1, filepath2, formaterName = 'stylish') => {
   const extension1 = path.extname(filepath1);
   const extension2 = path.extname(filepath1);
 
@@ -25,6 +25,8 @@ export default (filepath1, filepath2) => {
     return keysToCompare.reduce((acc, key) => {
       const value1 = obj1[key];
       const value2 = obj2[key];
+      const isObj1HasKey = _.has(obj1, key);
+      const isObj2HasKey = _.has(obj2, key);
 
       if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
         acc.push({ key, value: iter(value1, value2), hasChildren: true });
@@ -36,11 +38,21 @@ export default (filepath1, filepath2) => {
         return acc;
       }
 
-      if (_.has(obj1, key)) {
+      if (isObj1HasKey && isObj2HasKey) {
+        acc.push({
+          key,
+          status: 'updated',
+          value: value2,
+          oldValue: value1,
+        });
+        return acc;
+      }
+
+      if (isObj1HasKey) {
         acc.push({ key, status: 'deleted', value: value1 });
       }
 
-      if (_.has(obj2, key)) {
+      if (isObj2HasKey) {
         acc.push({ key, status: 'added', value: value2 });
       }
 
@@ -50,5 +62,5 @@ export default (filepath1, filepath2) => {
 
   const ast = iter(parsedFile1, parsedFile2);
 
-  return format(ast);
+  return format(ast, formaterName);
 };
