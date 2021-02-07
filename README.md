@@ -21,3 +21,8 @@
 ---
 Вложенные структуры (JSON и YAML)
 [![asciicast](https://asciinema.org/a/x9WAQz8kcqU6Y4doSBP56uoJh.svg)](https://asciinema.org/a/x9WAQz8kcqU6Y4doSBP56uoJh)
+
+Формат JSON
+---
+Вложенные структуры (JSON и YAML)
+[![asciicast](https://asciinema.org/a/2uh7vsCmPqC6RKnMuIhsK4TzF.svg)](https://asciinema.org/a/2uh7vsCmPqC6RKnMuIhsK4TzF)
