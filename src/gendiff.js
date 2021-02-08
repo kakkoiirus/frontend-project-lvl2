@@ -29,31 +29,30 @@ export default (filepath1, filepath2, formaterName = 'stylish') => {
       const isObj2HasKey = _.has(obj2, key);
 
       if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-        acc.push({ key, value: iter(value1, value2), hasChildren: true });
-        return acc;
+        return [...acc, { key, value: iter(value1, value2), hasChildren: true }];
       }
 
       if (value1 === value2) {
-        acc.push({ key, status: 'unchanged', value: value1 });
-        return acc;
+        return [...acc, { key, status: 'unchanged', value: value1 }];
       }
 
       if (isObj1HasKey && isObj2HasKey) {
-        acc.push({
-          key,
-          status: 'updated',
-          value: value2,
-          oldValue: value1,
-        });
-        return acc;
+        return [
+          ...acc,
+          {
+            key,
+            status: 'updated',
+            value: value2,
+            oldValue: value1,
+          }];
       }
 
       if (isObj1HasKey) {
-        acc.push({ key, status: 'deleted', value: value1 });
+        return [...acc, { key, status: 'deleted', value: value1 }];
       }
 
       if (isObj2HasKey) {
-        acc.push({ key, status: 'added', value: value2 });
+        return [...acc, { key, status: 'added', value: value2 }];
       }
 
       return acc;

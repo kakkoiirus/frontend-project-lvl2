@@ -31,25 +31,23 @@ export default (diff) => {
         hasChildren,
       } = item;
 
-      const newPath = [...path];
-      newPath.push(key);
+      const newPath = [...path, key];
 
       if (hasChildren) {
         return iter(value, newPath);
       }
 
-      const resultString = [];
-      resultString.push(`Property '${newPath.join('.')}' was ${STATUS_MAP[status]}`);
+      const basicLine = (`Property '${newPath.join('.')}' was ${STATUS_MAP[status]}`);
 
       if (status === 'updated') {
-        resultString.push(`. From ${stringify(oldValue)} to ${stringify(value)}`);
+        return `${basicLine}. From ${stringify(oldValue)} to ${stringify(value)}`;
       }
 
       if (status === 'added') {
-        resultString.push(` with value: ${stringify(value)}`);
+        return `${basicLine} with value: ${stringify(value)}`;
       }
 
-      return resultString.join('');
+      return basicLine;
     });
 
     return result.join('\n');

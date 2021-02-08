@@ -4,8 +4,6 @@ const STATUS_MAP = {
   added: '+',
   deleted: '-',
 };
-const START_SYMBOL = '{';
-const END_SYMBOL = '}';
 const GAP_SYMBOL = '    ';
 
 const getSymbol = (status) => {
@@ -28,12 +26,9 @@ const getLine = (key, value, status, depth) => `${getIndent(depth)}  ${getSymbol
 
 export default (diff) => {
   const iter = (ast, depth = 0) => {
-    const result = [];
-    result.push(START_SYMBOL);
-
     const newAst = _.isPlainObject(ast) ? transformObject(ast) : [...ast];
 
-    newAst.forEach((item) => {
+    const result = newAst.flatMap((item) => {
       const {
         key,
         status,
@@ -49,17 +44,13 @@ export default (diff) => {
         : item.value;
 
       if (status === 'updated') {
-        result.push(getLine(key, oldValue, 'deleted', depth));
-        result.push(getLine(key, value, 'added', depth));
-        return;
+        return [getLine(key, oldValue, 'deleted', depth), getLine(key, value, 'added', depth)];
       }
 
-      result.push(getLine(key, value, status, depth));
+      return getLine(key, value, status, depth);
     });
 
-    result.push(`${getIndent(depth)}${END_SYMBOL}`);
-
-    return result.join('\n');
+    return `{\n${result.join('\n')}\n${getIndent(depth)}}`;
   };
 
   return iter(diff);
