@@ -20,7 +20,7 @@ export default (filepath1, filepath2, formaterName = 'stylish') => {
   const parsedFile2 = parse(readFile(filepath2), extension2);
 
   const iter = (obj1, obj2) => {
-    const keysToCompare = Object.keys({ ...obj1, ...obj2 }).sort();
+    const keysToCompare = _.sortBy(Object.keys({ ...obj1, ...obj2 }));
 
     return keysToCompare.reduce((acc, key) => {
       const value1 = obj1[key];
