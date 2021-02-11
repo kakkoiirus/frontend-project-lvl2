@@ -1,9 +1,14 @@
 import yaml from 'js-yaml';
 
-export default (content, extension = '.json') => {
-  if (extension === '.yml') {
-    return yaml.load(content);
-  }
+export default (content, format = 'json') => {
+  switch (format) {
+    case 'json':
+      return JSON.parse(content);
 
-  return JSON.parse(content);
+    case 'yml':
+      return yaml.load(content);
+
+    default:
+      throw new Error(`Unknown format ${format}.`);
+  }
 };

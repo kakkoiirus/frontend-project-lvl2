@@ -12,12 +12,14 @@ const readFile = (filepath) => {
   return file;
 };
 
-export default (filepath1, filepath2, formaterName = 'stylish') => {
-  const extension1 = path.extname(filepath1);
-  const extension2 = path.extname(filepath1);
+const getFormatOfFile = (filepath) => path.extname(filepath).slice(1);
 
-  const parsedFile1 = parse(readFile(filepath1), extension1);
-  const parsedFile2 = parse(readFile(filepath2), extension2);
+export default (filepath1, filepath2, formaterName = 'stylish') => {
+  const formatOfFile1 = getFormatOfFile(filepath1);
+  const formatOfFile2 = getFormatOfFile(filepath2);
+
+  const parsedFile1 = parse(readFile(filepath1), formatOfFile1);
+  const parsedFile2 = parse(readFile(filepath2), formatOfFile2);
 
   const buildedAst = ast(parsedFile1, parsedFile2);
 
