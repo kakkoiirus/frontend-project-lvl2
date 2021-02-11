@@ -5,49 +5,31 @@ import fs from 'fs';
 
 import gendiff from '../src/gendiff.js';
 
+const JSON_FILEPATH1 = '__fixtures__/file1.json';
+const JSON_FILEPATH2 = '__fixtures__/file2.json';
+const YML_FILEPATH1 = '__fixtures__/file1.yml';
+const YML_FILEPATH2 = '__fixtures__/file2.yml';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFixture = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-describe('Stylish diff of', () => {
-  test('two json-file', () => {
-    const expectedResult = readFixture('expected_result.txt');
-    const result = gendiff('__fixtures__/file1.json', '__fixtures__/file2.json');
-    expect(result).toEqual(expectedResult);
-  });
+const expectedStylishResult = readFixture('expected_result.txt');
+const expectedPlainResult = readFixture('expected_plain.txt');
+const expectedJSONResult = readFixture('expected_json.txt');
 
-  test('two yaml-file', () => {
-    const expectedResult = readFixture('expected_result.txt');
-    const result = gendiff('__fixtures__/file1.yml', '__fixtures__/file2.yml');
-    expect(result).toEqual(expectedResult);
-  });
-});
-describe('Plain diff of', () => {
-  test('two json-file', () => {
-    const expectedResult = readFixture('expected_plain.txt');
-    const result = gendiff('__fixtures__/file1.json', '__fixtures__/file2.json', 'plain');
-    expect(result).toEqual(expectedResult);
-  });
-
-  test('two yaml-file', () => {
-    const expectedResult = readFixture('expected_plain.txt');
-    const result = gendiff('__fixtures__/file1.yml', '__fixtures__/file2.yml', 'plain');
-    expect(result).toEqual(expectedResult);
-  });
-});
-
-describe('JSON diff of', () => {
-  test('two json-file', () => {
-    const expectedResult = readFixture('expected_json.txt');
-    const result = gendiff('__fixtures__/file1.json', '__fixtures__/file2.json', 'json');
-    expect(result).toEqual(expectedResult);
-  });
-
-  test('two yaml-file', () => {
-    const expectedResult = readFixture('expected_json.txt');
-    const result = gendiff('__fixtures__/file1.yml', '__fixtures__/file2.yml', 'json');
-    expect(result).toEqual(expectedResult);
+describe('Test diff of', () => {
+  test.each([
+    [JSON_FILEPATH1, JSON_FILEPATH2, '', expectedStylishResult],
+    [YML_FILEPATH1, YML_FILEPATH2, '', expectedStylishResult],
+    [JSON_FILEPATH1, JSON_FILEPATH2, 'plain', expectedPlainResult],
+    [YML_FILEPATH1, YML_FILEPATH2, 'plain', expectedPlainResult],
+    [JSON_FILEPATH1, JSON_FILEPATH2, 'json', expectedJSONResult],
+    [YML_FILEPATH1, YML_FILEPATH2, 'json', expectedJSONResult],
+  ])('files: ( %s, %s ), style: %p', (filepath1, filepath2, style, expected) => {
+    const result = gendiff(filepath1, filepath2, style);
+    expect(result).toEqual(expected);
   });
 });
