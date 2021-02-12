@@ -32,14 +32,13 @@ export default (diff) => {
       const {
         key,
         type,
-        hasChildren,
       } = item;
 
       const oldValue = _.isPlainObject(item.oldValue)
         ? iter(item.oldValue, depth + 1)
         : item.oldValue;
 
-      const value = _.isPlainObject(item.value) || hasChildren
+      const value = _.isPlainObject(item.value) || type === 'nested'
         ? iter(item.value, depth + 1)
         : item.value;
 

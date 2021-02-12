@@ -28,12 +28,11 @@ export default (diff) => {
         value,
         oldValue,
         type,
-        hasChildren,
       } = item;
 
       const newPath = [...path, key];
 
-      if (hasChildren) {
+      if (type === 'nested') {
         return iter(value, newPath);
       }
 

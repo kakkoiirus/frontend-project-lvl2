@@ -24,7 +24,6 @@ const ast = (obj1, obj2) => {
           key,
           type: 'nested',
           value: ast(value1, value2),
-          hasChildren: true,
         }];
     }
 
