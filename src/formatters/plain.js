@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const STATUS_MAP = {
+const TYPE_MAP = {
   added: 'added',
   deleted: 'removed',
   updated: 'updated',
@@ -20,14 +20,14 @@ const stringify = (value) => {
 
 export default (diff) => {
   const iter = (ast, path = []) => {
-    const changedItems = ast.filter(({ status }) => status !== 'unchanged');
+    const changedItems = ast.filter(({ type }) => type !== 'unchanged');
 
     const result = changedItems.map((item) => {
       const {
         key,
         value,
         oldValue,
-        status,
+        type,
         hasChildren,
       } = item;
 
@@ -37,13 +37,13 @@ export default (diff) => {
         return iter(value, newPath);
       }
 
-      const basicLine = (`Property '${newPath.join('.')}' was ${STATUS_MAP[status]}`);
+      const basicLine = (`Property '${newPath.join('.')}' was ${TYPE_MAP[type]}`);
 
-      if (status === 'updated') {
+      if (type === 'updated') {
         return `${basicLine}. From ${stringify(oldValue)} to ${stringify(value)}`;
       }
 
-      if (status === 'added') {
+      if (type === 'added') {
         return `${basicLine} with value: ${stringify(value)}`;
       }
 

@@ -1,17 +1,17 @@
 import _ from 'lodash';
 
-const STATUS_MAP = {
+const TYPE_MAP = {
   added: '+',
   deleted: '-',
 };
 const GAP_SYMBOL = '    ';
 
-const getSymbol = (status) => {
-  if (!_.has(STATUS_MAP, status)) {
+const getSymbol = (type) => {
+  if (!_.has(TYPE_MAP, type)) {
     return ' ';
   }
 
-  return STATUS_MAP[status];
+  return TYPE_MAP[type];
 };
 
 const getIndent = (depth) => `${GAP_SYMBOL.repeat(depth)}`;
@@ -22,7 +22,7 @@ const transformObject = (obj) => {
   return entries.map(([key, value]) => ({ key, value }));
 };
 
-const getLine = (key, value, status, depth) => `${getIndent(depth)}  ${getSymbol(status)} ${key}: ${value}`;
+const getLine = (key, value, type, depth) => `${getIndent(depth)}  ${getSymbol(type)} ${key}: ${value}`;
 
 export default (diff) => {
   const iter = (ast, depth = 0) => {
@@ -31,7 +31,7 @@ export default (diff) => {
     const result = newAst.flatMap((item) => {
       const {
         key,
-        status,
+        type,
         hasChildren,
       } = item;
 
@@ -43,11 +43,11 @@ export default (diff) => {
         ? iter(item.value, depth + 1)
         : item.value;
 
-      if (status === 'updated') {
+      if (type === 'updated') {
         return [getLine(key, oldValue, 'deleted', depth), getLine(key, value, 'added', depth)];
       }
 
-      return getLine(key, value, status, depth);
+      return getLine(key, value, type, depth);
     });
 
     return `{\n${result.join('\n')}\n${getIndent(depth)}}`;

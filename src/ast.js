@@ -9,34 +9,37 @@ const ast = (obj1, obj2) => {
     const isObj1HasKey = _.has(obj1, key);
     const isObj2HasKey = _.has(obj2, key);
 
+    if (!isObj1HasKey) {
+      return [...acc, { key, type: 'added', value: value2 }];
+    }
+
+    if (!isObj2HasKey) {
+      return [...acc, { key, type: 'deleted', value: value1 }];
+    }
+
     if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-      return [...acc, { key, value: ast(value1, value2), hasChildren: true }];
-    }
-
-    if (value1 === value2) {
-      return [...acc, { key, status: 'unchanged', value: value1 }];
-    }
-
-    if (isObj1HasKey && isObj2HasKey) {
       return [
         ...acc,
         {
           key,
-          status: 'updated',
+          type: 'nested',
+          value: ast(value1, value2),
+          hasChildren: true,
+        }];
+    }
+
+    if (!_.isEqual(value1, value2)) {
+      return [
+        ...acc,
+        {
+          key,
+          type: 'updated',
           value: value2,
           oldValue: value1,
         }];
     }
 
-    if (isObj1HasKey) {
-      return [...acc, { key, status: 'deleted', value: value1 }];
-    }
-
-    if (isObj2HasKey) {
-      return [...acc, { key, status: 'added', value: value2 }];
-    }
-
-    return acc;
+    return [...acc, { key, type: 'unchanged', value: value1 }];
   }, []);
 };
 
