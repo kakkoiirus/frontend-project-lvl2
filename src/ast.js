@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 const ast = (obj1, obj2) => {
-  const keysToCompare = _.sortBy(Object.keys({ ...obj1, ...obj2 }));
+  const keysToCompare = _.sortBy(_.union(_.keys(obj1), _.keys(obj2)));
 
   return keysToCompare.reduce((acc, key) => {
     const value1 = obj1[key];
