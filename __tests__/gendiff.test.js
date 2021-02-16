@@ -22,8 +22,8 @@ const expectedJSONResult = readFixture('expected_json.txt');
 
 describe('Test diff of', () => {
   test.each([
-    [JSON_FILEPATH1, JSON_FILEPATH2, '', expectedStylishResult],
-    [YML_FILEPATH1, YML_FILEPATH2, '', expectedStylishResult],
+    [JSON_FILEPATH1, JSON_FILEPATH2, 'stylish', expectedStylishResult],
+    [YML_FILEPATH1, YML_FILEPATH2, 'stylish', expectedStylishResult],
     [JSON_FILEPATH1, JSON_FILEPATH2, 'plain', expectedPlainResult],
     [YML_FILEPATH1, YML_FILEPATH2, 'plain', expectedPlainResult],
     [JSON_FILEPATH1, JSON_FILEPATH2, 'json', expectedJSONResult],

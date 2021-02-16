@@ -1,15 +1,18 @@
 import stylish from './stylish.js';
 import plain from './plain.js';
-import json from './json.js';
 
 export default (diff, formater) => {
-  if (formater === 'plain') {
-    return plain(diff);
-  }
+  switch (formater) {
+    case 'stylish':
+      return stylish(diff);
 
-  if (formater === 'json') {
-    return json(diff);
-  }
+    case 'plain':
+      return plain(diff);
 
-  return stylish(diff);
+    case 'json':
+      return JSON.stringify(diff);
+
+    default:
+      throw new Error(`Unknown formater ${formater}.`);
+  }
 };
