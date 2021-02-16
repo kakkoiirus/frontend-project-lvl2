@@ -1,56 +1,38 @@
 import _ from 'lodash';
 
-const TYPE_MAP = {
-  added: '+',
-  deleted: '-',
-};
-const GAP_SYMBOL = '    ';
+const INDENT = '    ';
 
-const getSymbol = (type) => {
-  if (!_.has(TYPE_MAP, type)) {
-    return ' ';
+const getIndent = (depth) => INDENT.repeat(depth);
+
+const stringify = (data, depth) => {
+  if (_.isPlainObject(data)) {
+    const entries = Object.entries(data);
+
+    const result = entries.map(([key, value]) => `${getIndent(depth + 1)}    ${key}: ${stringify(value, depth + 1)}`);
+
+    return `{\n${result.join('\n')}\n${getIndent(depth + 1)}}`;
   }
 
-  return TYPE_MAP[type];
+  return data;
 };
 
-const getIndent = (depth) => `${GAP_SYMBOL.repeat(depth)}`;
+const mapping = {
+  nested: ({ key, value }, depth, fn) => `${getIndent(depth)}    ${key}: ${fn(value, depth + 1)}`,
+  added: ({ key, value }, depth) => `${getIndent(depth)}  + ${key}: ${stringify(value, depth)}`,
+  deleted: ({ key, value }, depth) => `${getIndent(depth)}  - ${key}: ${stringify(value, depth)}`,
+  unchanged: ({ key, value }, depth) => `${getIndent(depth)}    ${key}: ${stringify(value, depth)}`,
+  updated: ({ key, value, oldValue }, depth) => {
+    const data1 = `${getIndent(depth)}  - ${key}: ${stringify(oldValue, depth)}`;
+    const data2 = `${getIndent(depth)}  + ${key}: ${stringify(value, depth)}`;
 
-const transformObject = (obj) => {
-  const entries = Object.entries(obj);
-
-  return entries.map(([key, value]) => ({ key, value }));
+    return [data1, data2];
+  },
 };
 
-const getLine = (key, value, type, depth) => `${getIndent(depth)}  ${getSymbol(type)} ${key}: ${value}`;
+const iter = (ast, depth = 0) => {
+  const result = ast.flatMap((item) => mapping[item.type](item, depth, iter));
 
-export default (diff) => {
-  const iter = (ast, depth = 0) => {
-    const newAst = _.isPlainObject(ast) ? transformObject(ast) : [...ast];
-
-    const result = newAst.flatMap((item) => {
-      const {
-        key,
-        type,
-      } = item;
-
-      const oldValue = _.isPlainObject(item.oldValue)
-        ? iter(item.oldValue, depth + 1)
-        : item.oldValue;
-
-      const value = _.isPlainObject(item.value) || type === 'nested'
-        ? iter(item.value, depth + 1)
-        : item.value;
-
-      if (type === 'updated') {
-        return [getLine(key, oldValue, 'deleted', depth), getLine(key, value, 'added', depth)];
-      }
-
-      return getLine(key, value, type, depth);
-    });
-
-    return `{\n${result.join('\n')}\n${getIndent(depth)}}`;
-  };
-
-  return iter(diff);
+  return `{\n${result.join('\n')}\n${getIndent(depth)}}`;
 };
+
+export default iter;

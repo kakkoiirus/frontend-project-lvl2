@@ -1,11 +1,5 @@
 import _ from 'lodash';
 
-const TYPE_MAP = {
-  added: 'added',
-  deleted: 'removed',
-  updated: 'updated',
-};
-
 const stringify = (value) => {
   if (typeof value === 'string') {
     return `'${value}'`;
@@ -18,39 +12,22 @@ const stringify = (value) => {
   return value;
 };
 
-export default (diff) => {
-  const iter = (ast, path = []) => {
-    const changedItems = ast.filter(({ type }) => type !== 'unchanged');
-
-    const result = changedItems.map((item) => {
-      const {
-        key,
-        value,
-        oldValue,
-        type,
-      } = item;
-
-      const newPath = [...path, key];
-
-      if (type === 'nested') {
-        return iter(value, newPath);
-      }
-
-      const basicLine = (`Property '${newPath.join('.')}' was ${TYPE_MAP[type]}`);
-
-      if (type === 'updated') {
-        return `${basicLine}. From ${stringify(oldValue)} to ${stringify(value)}`;
-      }
-
-      if (type === 'added') {
-        return `${basicLine} with value: ${stringify(value)}`;
-      }
-
-      return basicLine;
-    });
-
-    return result.join('\n');
-  };
-
-  return iter(diff);
+const mapping = {
+  nested: (path, { value }, fn) => fn(value, path),
+  added: (path, { value }) => `Property '${path.join('.')}' was added with value: ${stringify(value)}`,
+  deleted: (path) => `Property '${path.join('.')}' was removed`,
+  unchanged: () => [],
+  updated: (path, { value, oldValue }) => `Property '${path.join('.')}' was updated. From ${stringify(oldValue)} to ${stringify(value)}`,
 };
+
+const iter = (ast, path = []) => {
+  const result = ast.flatMap((item) => {
+    const newPath = [...path, item.key];
+
+    return mapping[item.type](newPath, item, iter);
+  });
+
+  return result.join('\n');
+};
+
+export default iter;
